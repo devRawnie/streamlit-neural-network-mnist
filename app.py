@@ -21,7 +21,7 @@ if uploaded_file is not None:
     print(image)
     img = np.array(image.resize((28, 28)))
     img = img[:, :, 0]  # Convert to grayscale
-    # img = img.reshape(1, 28 * 28).astype('float32') / 255.0  # Reshape and normalize
+    img = img.reshape((1, 28, 28)).astype('float32') / 255.0  # Reshape and normalize
 
     # Perform prediction using the model
     prediction = model.predict(img)
