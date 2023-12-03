@@ -2,29 +2,32 @@ import streamlit as st
 import numpy as np
 from PIL import Image
 import tensorflow as tf
-from tensorflow.keras import models
+from keras.models import load_model
 
 # Load the trained model
-model = models.load_model("./tf_digit_classifier.h5")  # Replace with your model path
+model = load_model("./tf_digit_classifier.h5")  # Replace with your model path
+
+def preprocess_image(img):
+    img = tf.image.rgb_to_grayscale(img)  # Convert to grayscale
+    img = tf.image.resize(img, (28, 28))   # Resize to model input size
+    img = img / 255.0                      # Normalize pixel values
+    img = np.expand_dims(img, axis=0)      # Add batch dimension
+    return img
+
+# Function to make predictions
+def predict_image(img):
+    processed_img = preprocess_image(img)
+    prediction = model.predict(processed_img)
+    st.image(image, caption='Uploaded Image.', width=256)
+    st.write("Classifying image..")
+    st.write("")
+    predicted_class = np.argmax(prediction)
+    return predicted_class
 
 st.title("Handwritten Digit Recognition")
-
 uploaded_file = st.file_uploader("Choose an image...", type=["png", "jpg"])
 
 if uploaded_file is not None:
     image = Image.open(uploaded_file)
-    st.image(image, caption='Uploaded Image.', use_column_width=True)
-    st.write("")
-    st.write("Classifying...")
-
-    # Preprocess the image
-    print(image)
-    img = np.array(image.resize((28, 28)))
-    img = img[:, :, 0]  # Convert to grayscale
-    img = img.reshape((1, 28, 28)).astype('float32') / 255.0  # Reshape and normalize
-
-    # Perform prediction using the model
-    prediction = model.predict(img)
-    predicted_class = np.argmax(prediction)
-
+    predicted_class = predict_image(image)
     st.write(f"Prediction: {predicted_class}")
