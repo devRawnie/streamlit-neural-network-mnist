@@ -30,7 +30,7 @@ def predict_image(img):
     return predicted_class
 
 st.title("Handwritten Digit Recognition")
-uploaded_file = st.file_uploader("Choose an image...", type=["png", "jpg"])
+uploaded_file = st.file_uploader("Choose an image (of type JPG)", type=["png", "jpg"])
 
 if uploaded_file is not None:
     image = Image.open(uploaded_file)
