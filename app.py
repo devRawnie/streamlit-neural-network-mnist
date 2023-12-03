@@ -8,7 +8,12 @@ from keras.models import load_model
 model = load_model("./tf_digit_classifier.h5")  # Replace with your model path
 
 def preprocess_image(img):
-    img = tf.image.rgb_to_grayscale(img)  # Convert to grayscale
+    if len(np.shape(img)) == 2:
+        img = np.expand_dims(img, axis=-1)
+    else:
+        img = tf.image.rgb_to_grayscale(img)  # Convert to grayscale
+
+    print("after", np.shape(img))
     img = tf.image.resize(img, (28, 28))   # Resize to model input size
     img = img / 255.0                      # Normalize pixel values
     img = np.expand_dims(img, axis=0)      # Add batch dimension
@@ -16,7 +21,7 @@ def preprocess_image(img):
 
 # Function to make predictions
 def predict_image(img):
-    processed_img = preprocess_image(img)
+    processed_img = preprocess_image(np.array(img))
     prediction = model.predict(processed_img)
     st.image(image, caption='Uploaded Image.', width=256)
     st.write("Classifying image..")
